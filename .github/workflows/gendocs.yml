@@ -65,70 +65,108 @@ jobs:
           echo "  - pymdownx.superfences" >> mkdocs.yml
           echo "  - pymdownx.arithmatex" >> mkdocs.yml
           echo "  - attr_list" >> mkdocs.yml
-          echo "  - admonition" >> mkdocs.yml
-
+          echo "  - admonition" >> mkdocs.yml      
+      
       - name: Generate Project Overview
         run: |
-          echo "# Visión General del Proyecto" > docs/overview.md
-          echo "\n## Descripción" >> docs/overview.md
-          echo "\nGenerador de documentación impulsado por IA (GDI-IA)" >> docs/overview.md
-          echo "\nEste sistema permite generar documentación técnica de manera automatizada a partir de análisis de código fuente utilizando inteligencia artificial. El proyecto facilita la creación y estandarización de entregables técnicos." >> docs/overview.md
-          echo "\n## Características Principales" >> docs/overview.md
-          echo "\n- Análisis de código con IA" >> docs/overview.md
-          echo "\n- Generación de documentación SRS (Software Requirements Specification)" >> docs/overview.md
-          echo "\n- Generación de diagramas UML y Mermaid" >> docs/overview.md
-          echo "\n- Completar documentos personalizados con IA" >> docs/overview.md
-          
+          cat > docs/overview.md << EOF
+          # Visión General del Proyecto
+
+          ## Descripción
+
+          Generador de documentación impulsado por IA (GDI-IA)
+
+          Este sistema permite generar documentación técnica de manera automatizada a partir de análisis de código fuente utilizando inteligencia artificial. El proyecto facilita la creación y estandarización de entregables técnicos.
+
+          ## Características Principales
+
+          - Análisis de código con IA
+          - Generación de documentación SRS (Software Requirements Specification)
+          - Generación de diagramas UML y Mermaid
+          - Completar documentos personalizados con IA
+          EOF
+      
       - name: Generate Architecture Documentation
         run: |
-          echo "# Arquitectura del Sistema" > docs/architecture.md
-          echo "\n## Componentes Principales" >> docs/architecture.md
-          echo "\n### Backend (Node.js/Express)" >> docs/architecture.md
-          echo "\n- Servidor Express" >> docs/architecture.md
-          echo "\n- Servicios de análisis de código (GeminiAI)" >> docs/architecture.md
-          echo "\n- Servicios de base de datos (Supabase)" >> docs/architecture.md
-          echo "\n- Servicios de generación de diagramas" >> docs/architecture.md
-          echo "\n### Frontend" >> docs/architecture.md
-          echo "\n- Interfaz HTML/CSS/JavaScript" >> docs/architecture.md
-          echo "\n- Bootstrap para componentes de UI" >> docs/architecture.md
-          echo "\n- Font Awesome para iconos" >> docs/architecture.md
-          echo "\n## Diagrama de Arquitectura" >> docs/architecture.md
-          echo "\n\`\`\`mermaid" >> docs/architecture.md
-          echo "flowchart TD" >> docs/architecture.md
-          echo "    Cliente[Cliente Web] --> Express[Servidor Express]" >> docs/architecture.md
-          echo "    Express --> AuthService[Servicio de Autenticación]" >> docs/architecture.md
-          echo "    Express --> GeminiService[Servicio de IA - Gemini]" >> docs/architecture.md
-          echo "    Express --> DBService[Servicio de Base de Datos]" >> docs/architecture.md
-          echo "    DBService --> Supabase[(Supabase)]" >> docs/architecture.md
-          echo "    GeminiService --> GoogleAPI[Google AI API]" >> docs/architecture.md
-          echo "\`\`\`" >> docs/architecture.md
+          cat > docs/architecture.md << EOF
+          # Arquitectura del Sistema
 
+          ## Componentes Principales
+
+          ### Backend (Node.js/Express)
+
+          - Servidor Express
+          - Servicios de análisis de código (GeminiAI)
+          - Servicios de base de datos (Supabase)
+          - Servicios de generación de diagramas
+
+          ### Frontend
+
+          - Interfaz HTML/CSS/JavaScript
+          - Bootstrap para componentes de UI
+          - Font Awesome para iconos
+
+          ## Diagrama de Arquitectura
+
+          \`\`\`mermaid
+          flowchart TD
+              Cliente[Cliente Web] --> Express[Servidor Express]
+              Express --> AuthService[Servicio de Autenticación]
+              Express --> GeminiService[Servicio de IA - Gemini]
+              Express --> DBService[Servicio de Base de Datos]
+              DBService --> Supabase[(Supabase)]
+              GeminiService --> GoogleAPI[Google AI API]
+          \`\`\`
+          EOF
+      
       - name: Generate API Documentation
         run: |
-          echo "# Documentación de API" > docs/api.md
-          echo "\n## Rutas de Autenticación" >> docs/api.md
-          echo "\n### POST /api/auth/register" >> docs/api.md
-          echo "\nRegistra un nuevo usuario en el sistema." >> docs/api.md
-          echo "\n**Parámetros:**" >> docs/api.md
-          echo "\n- \`email\`: Correo electrónico del usuario" >> docs/api.md
-          echo "\n- \`password\`: Contraseña del usuario" >> docs/api.md
-          echo "\n- \`name\`: Nombre del usuario" >> docs/api.md
-          echo "\n### POST /api/auth/login" >> docs/api.md
-          echo "\nInicia sesión en el sistema." >> docs/api.md
-          echo "\n**Parámetros:**" >> docs/api.md
-          echo "\n- \`email\`: Correo electrónico del usuario" >> docs/api.md
-          echo "\n- \`password\`: Contraseña del usuario" >> docs/api.md
-          echo "\n## Rutas de Proyectos" >> docs/api.md
-          echo "\n### POST /api/proyectos/analizar-codigo" >> docs/api.md
-          echo "\nAnaliza un archivo de código utilizando IA." >> docs/api.md
-          echo "\n### POST /api/proyectos/analizar-proyecto" >> docs/api.md
-          echo "\nAnaliza un proyecto completo y genera documentación SRS." >> docs/api.md
-          echo "\n### POST /api/proyectos/completar-documento-personalizado" >> docs/api.md
-          echo "\nCompleta un documento PDF personalizado con análisis de IA." >> docs/api.md
-          echo "\n### POST /api/proyectos/generar-diagramas-uml" >> docs/api.md
-          echo "\nGenera diagramas UML para el código fuente proporcionado." >> docs/api.md
-          echo "\n### POST /api/proyectos/generar-diagramas-mermaid" >> docs/api.md
-          echo "\nGenera diagramas Mermaid para el código fuente proporcionado." >> docs/api.md
+          cat > docs/api.md << EOF
+          # Documentación de API
+
+          ## Rutas de Autenticación
+
+          ### POST /api/auth/register
+
+          Registra un nuevo usuario en el sistema.
+
+          **Parámetros:**
+
+          - \`email\`: Correo electrónico del usuario
+          - \`password\`: Contraseña del usuario
+          - \`name\`: Nombre del usuario
+
+          ### POST /api/auth/login
+
+          Inicia sesión en el sistema.
+
+          **Parámetros:**
+
+          - \`email\`: Correo electrónico del usuario
+          - \`password\`: Contraseña del usuario
+
+          ## Rutas de Proyectos
+
+          ### POST /api/proyectos/analizar-codigo
+
+          Analiza un archivo de código utilizando IA.
+
+          ### POST /api/proyectos/analizar-proyecto
+
+          Analiza un proyecto completo y genera documentación SRS.
+
+          ### POST /api/proyectos/completar-documento-personalizado
+
+          Completa un documento PDF personalizado con análisis de IA.
+
+          ### POST /api/proyectos/generar-diagramas-uml
+
+          Genera diagramas UML para el código fuente proporcionado.
+
+          ### POST /api/proyectos/generar-diagramas-mermaid
+
+          Genera diagramas Mermaid para el código fuente proporcionado.
+          EOF
 
       - name: Generate Database Documentation
         run: |
