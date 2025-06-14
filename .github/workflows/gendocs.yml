@@ -1,32 +1,27 @@
 name: Generate Documentation
 
 on:
-  # Ejecutar cuando se hace push a la rama
   push:
-    branches: [ main ]
-  # Permitir ejecutar manualmente desde la interfaz de GitHub
+    branches: [main]
   workflow_dispatch:
 
-# Definición de permisos
 permissions:
   contents: write
   pages: write
   id-token: write
 
-# Permitir solo una ejecución simultánea
 concurrency:
-  group: "pages"
+  group: pages
   cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:      
-      
+    steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Para obtener todo el historial de git
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -37,26 +32,25 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
-          npm install -g @mermaid-js/mermaid-cli      
-      
+          npm install -g @mermaid-js/mermaid-cli
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-          cache: 'pip'      
-      
+          cache: 'pip'
+
       - name: Install Python dependencies
         run: |
-          pip install -r requirements.txt      
-      
+          pip install -r requirements.txt
+
       - name: Setup MkDocs
         run: |
           mkdir -p docs
           touch docs/.nojekyll
-          echo "# PyDocumentosIA" > docs/index.md
           echo "site_name: PyDocumentosIA - Documentación" > mkdocs.yml
           echo "theme: material" >> mkdocs.yml
-          echo "repo_url: ${{ github.server_url }}/${{ github.repository }}" >> mkdocs.yml
+          echo "repo_url: \${{ github.server_url }}/\${{ github.repository }}" >> mkdocs.yml
           echo "plugins:" >> mkdocs.yml
           echo "  - search" >> mkdocs.yml
           echo "  - mermaid2" >> mkdocs.yml
@@ -65,8 +59,8 @@ jobs:
           echo "  - pymdownx.superfences" >> mkdocs.yml
           echo "  - pymdownx.arithmatex" >> mkdocs.yml
           echo "  - attr_list" >> mkdocs.yml
-          echo "  - admonition" >> mkdocs.yml      
-      
+          echo "  - admonition" >> mkdocs.yml
+
       - name: Generate Project Overview
         run: |
           cat > docs/overview.md << EOF
@@ -85,7 +79,7 @@ jobs:
           - Generación de diagramas UML y Mermaid
           - Completar documentos personalizados con IA
           EOF
-      
+
       - name: Generate Architecture Documentation
         run: |
           cat > docs/architecture.md << EOF
@@ -118,7 +112,7 @@ jobs:
               GeminiService --> GoogleAPI[Google AI API]
           \`\`\`
           EOF
-      
+
       - name: Generate API Documentation
         run: |
           cat > docs/api.md << EOF
@@ -131,7 +125,6 @@ jobs:
           Registra un nuevo usuario en el sistema.
 
           **Parámetros:**
-
           - \`email\`: Correo electrónico del usuario
           - \`password\`: Contraseña del usuario
           - \`name\`: Nombre del usuario
@@ -141,7 +134,6 @@ jobs:
           Inicia sesión en el sistema.
 
           **Parámetros:**
-
           - \`email\`: Correo electrónico del usuario
           - \`password\`: Contraseña del usuario
 
@@ -170,172 +162,229 @@ jobs:
 
       - name: Generate Database Documentation
         run: |
-          mkdir -p docs/database
-          echo "# Modelo de Datos" > docs/database/index.md
-          echo "\n## Diagrama Entidad-Relación" >> docs/database/index.md
-          echo "\n\`\`\`mermaid" >> docs/database/index.md
-          echo "erDiagram" >> docs/database/index.md
-          echo "    USUARIOS ||--o{ PROYECTOS_CODIGO : crea" >> docs/database/index.md
-          echo "    USUARIOS ||--o{ DOCUMENTOS_GENERADOS : posee" >> docs/database/index.md
-          echo "    PROYECTOS_CODIGO ||--o{ DOCUMENTOS_GENERADOS : genera" >> docs/database/index.md
-          echo "    " >> docs/database/index.md
-          echo "    USUARIOS {" >> docs/database/index.md
-          echo "        int id PK" >> docs/database/index.md
-          echo "        string nombre" >> docs/database/index.md
-          echo "        string apellidos" >> docs/database/index.md
-          echo "        string correo_electronico UK" >> docs/database/index.md
-          echo "        boolean esta_activo" >> docs/database/index.md
-          echo "        timestamp correo_verificado_en" >> docs/database/index.md
-          echo "        timestamp ultimo_inicio_sesion_en" >> docs/database/index.md
-          echo "        string zona_horaria" >> docs/database/index.md
-          echo "        string idioma" >> docs/database/index.md
-          echo "        timestamp creado_en" >> docs/database/index.md
-          echo "        timestamp actualizado_en" >> docs/database/index.md
-          echo "        string contrasena" >> docs/database/index.md
-          echo "    }" >> docs/database/index.md
-          echo "    " >> docs/database/index.md
-          echo "    PROYECTOS_CODIGO {" >> docs/database/index.md
-          echo "        int id PK" >> docs/database/index.md
-          echo "        int usuario_id FK" >> docs/database/index.md
-          echo "        string nombre_proyecto" >> docs/database/index.md
-          echo "        string descripcion" >> docs/database/index.md
-          echo "        string lenguaje_programacion" >> docs/database/index.md
-          echo "        text contenido_codigo" >> docs/database/index.md
-          echo "        string ruta_almacenamiento_codigo" >> docs/database/index.md
-          echo "        string estado_procesamiento" >> docs/database/index.md
-          echo "        timestamp ultimo_analisis_en" >> docs/database/index.md
-          echo "        timestamp creado_en" >> docs/database/index.md
-          echo "        timestamp actualizado_en" >> docs/database/index.md
-          echo "    }" >> docs/database/index.md
-          echo "    " >> docs/database/index.md
-          echo "    DOCUMENTOS_GENERADOS {" >> docs/database/index.md
-          echo "        int id PK" >> docs/database/index.md
-          echo "        int proyecto_codigo_id FK" >> docs/database/index.md
-          echo "        int usuario_id FK" >> docs/database/index.md
-          echo "        string tipo_documento" >> docs/database/index.md
-          echo "        string formato_salida" >> docs/database/index.md
-          echo "        text contenido_documento" >> docs/database/index.md
-          echo "        string url_documento" >> docs/database/index.md
-          echo "        string version" >> docs/database/index.md
-          echo "        text parametros_generacion_json" >> docs/database/index.md
-          echo "        timestamp generado_en" >> docs/database/index.md
-          echo "        timestamp actualizado_en" >> docs/database/index.md
-          echo "    }" >> docs/database/index.md
-          echo "\`\`\`" >> docs/database/index.md
-          
-          echo "\n## Tablas" >> docs/database/index.md
-          echo "\n### Tabla USUARIOS" >> docs/database/index.md
-          echo "\nAlmacena la información de los usuarios del sistema, incluyendo sus credenciales, información personal, configuración de idioma y zona horaria." >> docs/database/index.md
-          echo "\n### Tabla PROYECTOS_CODIGO" >> docs/database/index.md
-          echo "\nAlmacena los proyectos de código subidos por los usuarios, incluyendo información sobre su contenido, estado de procesamiento y metadatos." >> docs/database/index.md
-          echo "\n### Tabla DOCUMENTOS_GENERADOS" >> docs/database/index.md
-          echo "\nAlmacena documentos generados automáticamente a partir de proyectos de código, en distintos formatos y versiones." >> docs/database/index.md
+          cat > docs/database/index.md << EOF
+          # Modelo de Datos
+
+          ## Diagrama Entidad-Relación
+
+          \`\`\`mermaid
+          erDiagram
+              USUARIOS ||--o{ PROYECTOS_CODIGO : crea
+              USUARIOS ||--o{ DOCUMENTOS_GENERADOS : posee
+              PROYECTOS_CODIGO ||--o{ DOCUMENTOS_GENERADOS : genera
+
+              USUARIOS {
+                  int id PK
+                  string nombre
+                  string apellidos
+                  string correo_electronico UK
+                  boolean esta_activo
+                  timestamp correo_verificado_en
+                  timestamp ultimo_inicio_sesion_en
+                  string zona_horaria
+                  string idioma
+                  timestamp creado_en
+                  timestamp actualizado_en
+                  string contrasena
+              }
+
+              PROYECTOS_CODIGO {
+                  int id PK
+                  int usuario_id FK
+                  string nombre_proyecto
+                  string descripcion
+                  string lenguaje_programacion
+                  text contenido_codigo
+                  string ruta_almacenamiento_codigo
+                  string estado_procesamiento
+                  timestamp ultimo_analisis_en
+                  timestamp creado_en
+                  timestamp actualizado_en
+              }
+
+              DOCUMENTOS_GENERADOS {
+                  int id PK
+                  int proyecto_codigo_id FK
+                  int usuario_id FK
+                  string tipo_documento
+                  string formato_salida
+                  text contenido_documento
+                  string url_documento
+                  string version
+                  text parametros_generacion_json
+                  timestamp generado_en
+                  timestamp actualizado_en
+              }
+          \`\`\`
+
+          ## Tablas
+
+          ### Tabla USUARIOS
+
+          Almacena la información de los usuarios del sistema, incluyendo sus credenciales, información personal, configuración de idioma y zona horaria.
+
+          ### Tabla PROYECTOS_CODIGO
+
+          Almacena los proyectos de código subidos por los usuarios, incluyendo información sobre su contenido, estado de procesamiento y metadatos.
+
+          ### Tabla DOCUMENTOS_GENERADOS
+
+          Almacena documentos generados automáticamente a partir de proyectos de código, en distintos formatos y versiones.
+          EOF
 
       - name: Generate Frontend Documentation
         run: |
-          mkdir -p docs/frontend
-          echo "# Documentación Frontend" > docs/frontend/index.md
-          echo "\n## Estructura de Archivos" >> docs/frontend/index.md
-          echo "\n- **public/index.html**: Página principal de la aplicación" >> docs/frontend/index.md
-          echo "\n- **public/login.html**: Página de inicio de sesión" >> docs/frontend/index.md
-          echo "\n- **public/css/styles.css**: Estilos CSS personalizados" >> docs/frontend/index.md
-          echo "\n- **public/js/main.js**: Script principal para la funcionalidad frontend" >> docs/frontend/index.md
-          echo "\n- **public/js/auth.js**: Script para manejo de autenticación" >> docs/frontend/index.md
-          echo "\n## Diagrama de Flujo de Usuario" >> docs/frontend/index.md
-          echo "\n\`\`\`mermaid" >> docs/frontend/index.md
-          echo "flowchart TD" >> docs/frontend/index.md
-          echo "    Login[Login/Register] --> Principal[Página Principal]" >> docs/frontend/index.md
-          echo "    Principal --> AnalizarArchivo[Analizar Archivo Individual]" >> docs/frontend/index.md
-          echo "    Principal --> AnalizarProyecto[Analizar Proyecto Completo]" >> docs/frontend/index.md
-          echo "    Principal --> CompletarDocumento[Completar Documento Personalizado]" >> docs/frontend/index.md
-          echo "    Principal --> GenerarDiagramas[Generar Diagramas]" >> docs/frontend/index.md
-          echo "    AnalizarArchivo --> MostrarAnalisis[Mostrar Análisis]" >> docs/frontend/index.md
-          echo "    AnalizarProyecto --> MostrarSRS[Mostrar Documentación SRS]" >> docs/frontend/index.md
-          echo "    CompletarDocumento --> MostrarDocumento[Mostrar Documento Completado]" >> docs/frontend/index.md
-          echo "    GenerarDiagramas --> MostrarDiagramas[Mostrar Diagramas]" >> docs/frontend/index.md
-          echo "\`\`\`" >> docs/frontend/index.md
+          cat > docs/frontend/index.md << EOF
+          # Documentación Frontend
+
+          ## Estructura de Archivos
+
+          - **public/index.html**: Página principal de la aplicación
+          - **public/login.html**: Página de inicio de sesión
+          - **public/css/styles.css**: Estilos CSS personalizados
+          - **public/js/main.js**: Script principal para la funcionalidad frontend
+          - **public/js/auth.js**: Script para manejo de autenticación
+
+          ## Diagrama de Flujo de Usuario
+
+          \`\`\`mermaid
+          flowchart TD
+              Login[Login/Register] --> Principal[Página Principal]
+              Principal --> AnalizarArchivo[Analizar Archivo Individual]
+              Principal --> AnalizarProyecto[Analizar Proyecto Completo]
+              Principal --> CompletarDocumento[Completar Documento Personalizado]
+              Principal --> GenerarDiagramas[Generar Diagramas]
+              AnalizarArchivo --> MostrarAnalisis[Mostrar Análisis]
+              AnalizarProyecto --> MostrarSRS[Mostrar Documentación SRS]
+              CompletarDocumento --> MostrarDocumento[Mostrar Documento Completado]
+              GenerarDiagramas --> MostrarDiagramas[Mostrar Diagramas]
+          \`\`\`
+          EOF
 
       - name: Generate Backend Documentation
         run: |
-          mkdir -p docs/backend
-          echo "# Documentación Backend" > docs/backend/index.md
-          echo "\n## Arquitectura del Servidor" >> docs/backend/index.md
-          echo "\nEl backend está construido en Node.js utilizando Express como framework principal." >> docs/backend/index.md
-          echo "\n## Estructura de Archivos" >> docs/backend/index.md
-          echo "\n- **server.cjs**: Punto de entrada de la aplicación, configuración del servidor Express" >> docs/backend/index.md
-          echo "\n- **routes/**: Archivos con las definiciones de rutas" >> docs/backend/index.md
-          echo "\n  - **routes/auth.js**: Rutas para autenticación" >> docs/backend/index.md
-          echo "\n  - **routes/proyectos.js**: Rutas para manejo de proyectos y análisis" >> docs/backend/index.md
-          echo "\n- **services/**: Servicios para lógica de negocio" >> docs/backend/index.md
-          echo "\n  - **services/db.js**: Servicio de base de datos (Supabase)" >> docs/backend/index.md
-          echo "\n  - **services/gemini.js**: Servicio para interactuar con Gemini IA" >> docs/backend/index.md
-          echo "\n- **config/**: Archivos de configuración" >> docs/backend/index.md
-          echo "\n  - **config/supabase.js**: Configuración de Supabase" >> docs/backend/index.md
-          echo "\n## Dependencias Principales" >> docs/backend/index.md
-          echo "\n- Express.js: Framework web" >> docs/backend/index.md
-          echo "\n- @google/generative-ai: API de Gemini para IA" >> docs/backend/index.md
-          echo "\n- @supabase/supabase-js: Cliente de base de datos Supabase" >> docs/backend/index.md
-          echo "\n- adm-zip: Procesamiento de archivos ZIP" >> docs/backend/index.md
-          echo "\n- pdf-parse: Extracción de texto de PDFs" >> docs/backend/index.md
-          echo "\n- express-session: Manejo de sesiones" >> docs/backend/index.md
+          cat > docs/backend/index.md << EOF
+          # Documentación Backend
+
+          ## Arquitectura del Servidor
+
+          El backend está construido en Node.js utilizando Express como framework principal.
+
+          ## Estructura de Archivos
+
+          - **server.cjs**: Punto de entrada de la aplicación, configuración del servidor Express
+          - **routes/**: Archivos con las definiciones de rutas
+            - **routes/auth.js**: Rutas para autenticación
+            - **routes/proyectos.js**: Rutas para manejo de proyectos y análisis
+          - **services/**: Servicios para lógica de negocio
+            - **services/db.js**: Servicio de base de datos (Supabase)
+            - **services/gemini.js**: Servicio para interactuar con Gemini IA
+          - **config/**: Archivos de configuración
+            - **config/supabase.js**: Configuración de Supabase
+
+          ## Dependencias Principales
+
+          - Express.js: Framework web
+          - @google/generative-ai: API de Gemini para IA
+          - @supabase/supabase-js: Cliente de base de datos Supabase
+          - adm-zip: Procesamiento de archivos ZIP
+          - pdf-parse: Extracción de texto de PDFs
+          - express-session: Manejo de sesiones
+          EOF
 
       - name: Generate Service Documentation
         run: |
           mkdir -p docs/services
-          echo "# Servicios" > docs/services/index.md
-          echo "\n## Servicio de IA (GeminiService)" > docs/services/gemini.md
-          echo "\nEl GeminiService proporciona funcionalidades para analizar código, generar documentación y crear diagramas utilizando la API de Google Gemini AI." >> docs/services/gemini.md
-          echo "\n### Métodos Principales" >> docs/services/gemini.md
-          echo "\n- **analizarCodigo**: Analiza archivos de código individuales" >> docs/services/gemini.md
-          echo "\n- **generarDocumentacionSRS**: Genera documentación SRS a partir de análisis de proyecto" >> docs/services/gemini.md
-          echo "\n- **completarDocumentoPersonalizado**: Completa documentos PDF con contenido generado por IA" >> docs/services/gemini.md
-          echo "\n- **generarDiagramasUML**: Genera diagramas UML utilizando PlantUML" >> docs/services/gemini.md
-          echo "\n- **generarDiagramasMermaid**: Genera diagramas con sintaxis Mermaid" >> docs/services/gemini.md
-          echo "\n## Servicio de Base de Datos" > docs/services/db.md
-          echo "\nInterfaz para interactuar con la base de datos Supabase." >> docs/services/db.md
-          echo "\n### Métodos para Usuarios" >> docs/services/db.md
-          echo "\n- **crearUsuario**: Crea un nuevo usuario" >> docs/services/db.md
-          echo "\n- **verificarCredenciales**: Verifica credenciales de usuario" >> docs/services/db.md
-          echo "\n- **obtenerUsuarioPorId**: Obtiene información de un usuario" >> docs/services/db.md
-          echo "\n### Métodos para Proyectos" >> docs/services/db.md
-          echo "\n- **crearProyecto**: Crea un nuevo proyecto" >> docs/services/db.md
-          echo "\n- **obtenerProyectosPorUsuario**: Obtiene proyectos de un usuario" >> docs/services/db.md
-          echo "\n### Métodos para Documentos" >> docs/services/db.md
-          echo "\n- **crearDocumento**: Crea un nuevo documento generado" >> docs/services/db.md
-          echo "\n- **obtenerDocumentosPorProyecto**: Obtiene documentos asociados a un proyecto" >> docs/services/db.md
+          cat > docs/services/index.md << EOF
+          # Servicios
+          EOF
+
+          cat > docs/services/gemini.md << EOF
+          ## Servicio de IA (GeminiService)
+
+          El GeminiService proporciona funcionalidades para analizar código, generar documentación y crear diagramas utilizando la API de Google Gemini AI.
+
+          ### Métodos Principales
+
+          - **analizarCodigo**: Analiza archivos de código individuales
+          - **generarDocumentacionSRS**: Genera documentación SRS a partir de análisis de proyecto
+          - **completarDocumentoPersonalizado**: Completa documentos PDF con contenido generado por IA
+          - **generarDiagramasUML**: Genera diagramas UML utilizando PlantUML
+          - **generarDiagramasMermaid**: Genera diagramas con sintaxis Mermaid
+          EOF
+
+          cat > docs/services/db.md << EOF
+          ## Servicio de Base de Datos
+
+          Interfaz para interactuar con la base de datos Supabase.
+
+          ### Métodos para Usuarios
+
+          - **crearUsuario**: Crea un nuevo usuario
+          - **verificarCredenciales**: Verifica credenciales de usuario
+          - **obtenerUsuarioPorId**: Obtiene información de un usuario
+
+          ### Métodos para Proyectos
+
+          - **crearProyecto**: Crea un nuevo proyecto
+          - **obtenerProyectosPorUsuario**: Obtiene proyectos de un usuario
+
+          ### Métodos para Documentos
+
+          - **crearDocumento**: Crea un nuevo documento generado
+          - **obtenerDocumentosPorProyecto**: Obtiene documentos asociados a un proyecto
+          EOF
 
       - name: Generate Testing Documentation
         run: |
           mkdir -p docs/testing
-          echo "# Documentación de Pruebas" > docs/testing/index.md
-          echo "\n## Pruebas con Playwright" >> docs/testing/index.md
-          echo "\nEl proyecto utiliza Playwright para pruebas automatizadas." >> docs/testing/index.md
-          echo "\n### Archivos de Prueba" >> docs/testing/index.md
-          echo "\n- **tests/login.spec.ts**: Pruebas de inicio de sesión" >> docs/testing/index.md
-          echo "\n- **tests/upload.spec.ts**: Pruebas de subida de archivos" >> docs/testing/index.md
-          echo "\n- **tests/diagram.spec.ts**: Pruebas de generación de diagramas" >> docs/testing/index.md
-          echo "\n### Configuración" >> docs/testing/index.md
-          echo "\nLa configuración de Playwright se encuentra en **playwright.config.ts**." >> docs/testing/index.md
-          echo "\nCaracterísticas de configuración:" >> docs/testing/index.md
-          echo "\n- Grabación de video obligatoria" >> docs/testing/index.md
-          echo "\n- Capturas de pantalla en fallos" >> docs/testing/index.md
-          echo "\n- Reportes HTML" >> docs/testing/index.md
+          cat > docs/testing/index.md << EOF
+          # Documentación de Pruebas
+
+          ## Pruebas con Playwright
+
+          El proyecto utiliza Playwright para pruebas automatizadas.
+
+          ### Archivos de Prueba
+
+          - **tests/login.spec.ts**: Pruebas de inicio de sesión
+          - **tests/upload.spec.ts**: Pruebas de subida de archivos
+          - **tests/diagram.spec.ts**: Pruebas de generación de diagramas
+
+          ### Configuración
+
+          La configuración de Playwright se encuentra en **playwright.config.ts**.
+
+          Características de configuración:
+          - Grabación de video obligatoria
+          - Capturas de pantalla en fallos
+          - Reportes HTML
+          EOF
 
       - name: Generate Deployment Documentation
         run: |
           mkdir -p docs/deployment
-          echo "# Implementación y Despliegue" > docs/deployment/index.md
-          echo "\n## Opciones de Despliegue" >> docs/deployment/index.md
-          echo "\n### Vercel" >> docs/deployment/index.md
-          echo "\nEl proyecto está configurado para despliegue en Vercel a través de **vercel.json**." >> docs/deployment/index.md
-          echo "\n### Railway" >> docs/deployment/index.md
-          echo "\nTambién se puede desplegar en Railway utilizando la configuración en **railway.json**." >> docs/deployment/index.md
-          echo "\n## Variables de Entorno" >> docs/deployment/index.md
-          echo "\n- **SUPABASE_URL**: URL de la instancia de Supabase" >> docs/deployment/index.md
-          echo "\n- **SUPABASE_KEY**: Clave de API de Supabase" >> docs/deployment/index.md
-          echo "\n- **API_KEY_1**, **API_KEY_2**, **API_KEY_3**: Claves para la API de Google Gemini" >> docs/deployment/index.md
-          echo "\n- **SESSION_SECRET**: Secreto para firmar las cookies de sesión" >> docs/deployment/index.md      
-      
+          cat > docs/deployment/index.md << EOF
+          # Implementación y Despliegue
+
+          ## Opciones de Despliegue
+
+          ### Vercel
+
+          El proyecto está configurado para despliegue en Vercel a través de **vercel.json**.
+
+          ### Railway
+
+          También se puede desplegar en Railway utilizando la configuración en **railway.json**.
+
+          ## Variables de Entorno
+
+          - **SUPABASE_URL**: URL de la instancia de Supabase
+          - **SUPABASE_KEY**: Clave de API de Supabase
+          - **API_KEY_1**, **API_KEY_2**, **API_KEY_3**: Claves para la API de Google Gemini
+          - **SESSION_SECRET**: Secreto para firmar las cookies de sesión
+          EOF
+
       - name: Generate Navigation Structure
         run: |
           echo "nav:" >> mkdocs.yml
@@ -352,7 +401,7 @@ jobs:
           echo "    - Servicio de DB: services/db.md" >> mkdocs.yml
           echo "  - Pruebas: testing/index.md" >> mkdocs.yml
           echo "  - Despliegue: deployment/index.md" >> mkdocs.yml
-      
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
@@ -364,15 +413,13 @@ jobs:
         with:
           path: ./site
 
-  # Trabajo para desplegar el sitio en GitHub Pages
   deploy:
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: \${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
-    steps:      
-      
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
