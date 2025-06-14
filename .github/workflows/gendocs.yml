@@ -162,12 +162,13 @@ jobs:
 
       - name: Generate Database Documentation
         run: |
+          mkdir -p docs/database
           cat > docs/database/index.md << EOF
           # Modelo de Datos
 
           ## Diagrama Entidad-Relación
 
-          \`\`\`mermaid
+          ```mermaid
           erDiagram
               USUARIOS ||--o{ PROYECTOS_CODIGO : crea
               USUARIOS ||--o{ DOCUMENTOS_GENERADOS : posee
@@ -215,7 +216,7 @@ jobs:
                   timestamp generado_en
                   timestamp actualizado_en
               }
-          \`\`\`
+          ```
 
           ## Tablas
 
