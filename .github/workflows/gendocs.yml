@@ -42,24 +42,86 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          pip install -r requirements.txt
-
+          pip install -r requirements.txt      
+      
       - name: Setup MkDocs
         run: |
           mkdir -p docs
           touch docs/.nojekyll
-          echo "site_name: PyDocumentosIA - Documentación" > mkdocs.yml
-          echo "theme: material" >> mkdocs.yml
-          echo "repo_url: https://github.com/${{ github.repository }}" >> mkdocs.yml
-          echo "plugins:" >> mkdocs.yml
-          echo "  - search" >> mkdocs.yml
-          echo "  - mermaid2" >> mkdocs.yml
-          echo "markdown_extensions:" >> mkdocs.yml
-          echo "  - pymdownx.highlight" >> mkdocs.yml
-          echo "  - pymdownx.superfences" >> mkdocs.yml
-          echo "  - pymdownx.arithmatex" >> mkdocs.yml
-          echo "  - attr_list" >> mkdocs.yml
-          echo "  - admonition" >> mkdocs.yml
+          
+          # Crear archivo index.md principal
+          cat > docs/index.md << EOF
+          # PyDocumentosIA
+          
+          ## Bienvenido a la Documentación de PyDocumentosIA
+          
+          PyDocumentosIA es un generador de documentación impulsado por Inteligencia Artificial que permite crear documentación técnica de manera automatizada.
+          
+          ### Navegación
+          
+          Utiliza el menú lateral para navegar por las diferentes secciones de la documentación:
+          
+          - **Visión General**: Introducción y características del proyecto
+          - **Arquitectura**: Estructura y componentes del sistema
+          - **API**: Documentación de endpoints y servicios
+          - **Frontend**: Información sobre la interfaz de usuario
+          - **Backend**: Detalles del servidor y servicios
+          - **Base de datos**: Modelo de datos y esquemas
+          - **Servicios**: Documentación de servicios específicos
+          - **Pruebas**: Información sobre testing y QA
+          - **Despliegue**: Guías de implementación
+          EOF
+          
+          # Configurar MkDocs
+          cat > mkdocs.yml << EOF
+          site_name: PyDocumentosIA - Documentación
+          site_description: Documentación técnica del proyecto PyDocumentosIA
+          repo_url: https://github.com/\${{ github.repository }}
+          repo_name: \${{ github.repository }}
+          
+          theme:
+            name: material
+            palette:
+              primary: blue
+              accent: blue
+            features:
+              - navigation.tabs
+              - navigation.sections
+              - navigation.expand
+              - navigation.top
+              - search.highlight
+              - content.code.copy
+          
+          plugins:
+            - search
+            - mermaid2:
+                arguments:
+                  theme: default
+          
+          markdown_extensions:
+            - pymdownx.highlight:
+                anchor_linenums: true
+            - pymdownx.inlinehilite
+            - pymdownx.snippets
+            - pymdownx.superfences:
+                custom_fences:
+                  - name: mermaid
+                    class: mermaid
+                    format: !!python/name:pymdownx.superfences.fence_code_format
+            - pymdownx.arithmatex:
+                generic: true
+            - attr_list
+            - md_in_html
+            - admonition
+            - pymdownx.details
+            - pymdownx.tabbed:
+                alternate_style: true
+          
+          extra:
+            social:
+              - icon: fontawesome/brands/github
+                link: https://github.com/\${{ github.repository }}
+          EOF
 
       - name: Generate Project Overview
         run: |
@@ -386,40 +448,51 @@ jobs:
           - **SUPABASE_KEY**: Clave de API de Supabase
           - **API_KEY_1**, **API_KEY_2**, **API_KEY_3**: Claves para la API de Google Gemini
           - **SESSION_SECRET**: Secreto para firmar las cookies de sesión
-          EOF
-
+          EOF      
+      
       - name: Generate Navigation Structure
         run: |
-          echo "nav:" >> mkdocs.yml
-          echo "  - Inicio: index.md" >> mkdocs.yml
-          echo "  - Visión General: overview.md" >> mkdocs.yml
-          echo "  - Arquitectura: architecture.md" >> mkdocs.yml
-          echo "  - API: api.md" >> mkdocs.yml
-          echo "  - Frontend: frontend/index.md" >> mkdocs.yml
-          echo "  - Backend: backend/index.md" >> mkdocs.yml
-          echo "  - Base de datos: database/index.md" >> mkdocs.yml
-          echo "  - Servicios:" >> mkdocs.yml
-          echo "    - Visión General: services/index.md" >> mkdocs.yml
-          echo "    - Servicio de IA: services/gemini.md" >> mkdocs.yml
-          echo "    - Servicio de DB: services/db.md" >> mkdocs.yml
-          echo "  - Pruebas: testing/index.md" >> mkdocs.yml
-          echo "  - Despliegue: deployment/index.md" >> mkdocs.yml
-
+          # Agregar la estructura de navegación al archivo mkdocs.yml existente
+          cat >> mkdocs.yml << EOF
+          
+          nav:
+            - Inicio: index.md
+            - Visión General: overview.md
+            - Arquitectura: architecture.md
+            - API: api.md
+            - Frontend: frontend/index.md
+            - Backend: backend/index.md
+            - Base de datos: database/index.md
+            - Servicios:
+              - Visión General: services/index.md
+              - Servicio de IA: services/gemini.md
+              - Servicio de DB: services/db.md
+            - Pruebas: testing/index.md
+            - Despliegue: deployment/index.md
+          EOF      
+      
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
+      - name: Validate MkDocs Configuration
+        run: |
+          echo "Validating MkDocs configuration..."
+          mkdocs --version
+          cat mkdocs.yml
+          echo "Listing docs directory..."
+          find docs -type f -name "*.md" | head -20
+
       - name: Build MkDocs site
-        run: mkdocs build
+        run: mkdocs build --verbose
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./site
-
   deploy:
     environment:
       name: github-pages
-      url: \${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
     steps:
