@@ -50,7 +50,7 @@ jobs:
           touch docs/.nojekyll
           echo "site_name: PyDocumentosIA - Documentación" > mkdocs.yml
           echo "theme: material" >> mkdocs.yml
-          echo "repo_url: \${{ github.server_url }}/\${{ github.repository }}" >> mkdocs.yml
+          echo "repo_url: https://github.com/${{ github.repository }}" >> mkdocs.yml
           echo "plugins:" >> mkdocs.yml
           echo "  - search" >> mkdocs.yml
           echo "  - mermaid2" >> mkdocs.yml
