@@ -235,6 +235,7 @@ jobs:
 
       - name: Generate Frontend Documentation
         run: |
+          mkdir -p docs/frontend
           cat > docs/frontend/index.md << EOF
           # Documentación Frontend
 
@@ -264,6 +265,7 @@ jobs:
 
       - name: Generate Backend Documentation
         run: |
+          mkdir -p docs/backend
           cat > docs/backend/index.md << EOF
           # Documentación Backend
 
