@@ -293,8 +293,8 @@ jobs:
           echo "\n- **SUPABASE_URL**: URL de la instancia de Supabase" >> docs/deployment/index.md
           echo "\n- **SUPABASE_KEY**: Clave de API de Supabase" >> docs/deployment/index.md
           echo "\n- **API_KEY_1**, **API_KEY_2**, **API_KEY_3**: Claves para la API de Google Gemini" >> docs/deployment/index.md
-          echo "\n- **SESSION_SECRET**: Secreto para firmar las cookies de sesión" >> docs/deployment/index.md
-
+          echo "\n- **SESSION_SECRET**: Secreto para firmar las cookies de sesión" >> docs/deployment/index.md      
+      
       - name: Generate Navigation Structure
         run: |
           echo "nav:" >> mkdocs.yml
@@ -310,7 +310,9 @@ jobs:
           echo "    - Servicio de IA: services/gemini.md" >> mkdocs.yml
           echo "    - Servicio de DB: services/db.md" >> mkdocs.yml
           echo "  - Pruebas: testing/index.md" >> mkdocs.yml
-          echo "  - Despliegue: deployment/index.md" >> mkdocs.yml      - name: Setup Pages
+          echo "  - Despliegue: deployment/index.md" >> mkdocs.yml
+          
+      - name: Setup Pages
         uses: actions/configure-pages@v4
 
       - name: Build MkDocs site
