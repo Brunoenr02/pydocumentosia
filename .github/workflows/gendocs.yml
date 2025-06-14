@@ -9,7 +9,7 @@ on:
 
 # Definición de permisos
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -47,11 +47,12 @@ jobs:
       
       - name: Install Python dependencies
         run: |
-          pip install -r requirements.txt
-
+          pip install -r requirements.txt      
+      
       - name: Setup MkDocs
         run: |
           mkdir -p docs
+          touch docs/.nojekyll
           echo "# PyDocumentosIA" > docs/index.md
           echo "site_name: PyDocumentosIA - Documentación" > mkdocs.yml
           echo "theme: material" >> mkdocs.yml
@@ -316,8 +317,6 @@ jobs:
       
       - name: Setup Pages
         uses: actions/configure-pages@v4
-        with:
-          enablement: true
 
       - name: Build MkDocs site
         run: mkdocs build
